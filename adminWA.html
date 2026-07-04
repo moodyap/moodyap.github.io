@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <title>Admin – Job Parser</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: rgb(228,185,211); font-family: 'Nunito', Arial, sans-serif; min-height: 100vh; }
+    .header { background: #f4a7c0; text-align: center; padding: 22px 16px; border-bottom: 2px solid #e87fa5; }
+    .header h1 { color: white; font-size: 1.3rem; font-weight: 900; }
+    .header p { color: white; font-size: 0.75rem; opacity: 0.9; margin-top: 4px; }
+    .content { padding: 16px; max-width: 480px; margin: 0 auto; padding-bottom: 32px; }
+    .card { background: white; border: 1.5px solid #f4d0dc; border-radius: 16px; padding: 18px; margin-bottom: 14px; }
+    .card-title { font-size: 0.95rem; font-weight: 800; color: #c2607a; margin-bottom: 12px; }
+    textarea { width: 100%; padding: 12px 14px; border: 1.5px solid #f4d0dc; border-radius: 12px; font-size: 0.78rem; font-family: inherit; outline: none; color: #5a3d48; resize: vertical; min-height: 200px; line-height: 1.7; }
+    textarea:focus { border-color: #f4a7c0; }
+    .btn-pink { display: block; background: #f4a7c0; color: white; padding: 13px; border-radius: 10px; font-size: 0.82rem; font-weight: 800; text-align: center; border: none; cursor: pointer; width: 100%; margin-top: 8px; font-family: inherit; }
+    .btn-green { display: block; background: #78c478; color: white; padding: 13px; border-radius: 10px; font-size: 0.82rem; font-weight: 800; text-align: center; border: none; cursor: pointer; width: 100%; margin-top: 8px; font-family: inherit; }
+    .preview-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px dashed #f4d0dc; }
+    .preview-row:last-child { border-bottom: none; }
+    .preview-label { font-size: 0.68rem; font-weight: 800; color: #d4a0b0; width: 70px; flex-shrink: 0; padding-top: 4px; }
+    .preview-val { font-size: 0.78rem; color: #5a3d48; font-weight: 700; flex: 1; line-height: 1.6; word-break: break-all; }
+    .code-output { width: 100%; min-height: 180px; padding: 12px; border: 1.5px solid #f4d0dc; border-radius: 12px; font-size: 0.68rem; font-family: monospace; color: #5a3d48; background: #fff9fb; resize: vertical; margin-top: 10px; }
+    .copy-note { font-size: 0.7rem; color: #888; font-weight: 700; margin-top: 8px; text-align: center; line-height: 1.6; }
+    .format-box { background: #fff9fb; border: 1px dashed #f4a7c0; border-radius: 12px; padding: 12px 14px; font-size: 0.72rem; color: #5a3d48; font-family: monospace; line-height: 2; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>⚙️ Admin – Job Parser</h1>
+  <p>Paste → Generate HTML → Copy ke SPCK → GitHub</p>
+</div>
+
+<div class="content">
+
+  <div class="card">
+    <div class="card-title">📋 Format Wajib</div>
+    <div class="format-box">
+1. [link affiliate]<br>
+2. [deskripsi job]<br>
+3. [nomor CP / 628xxx]
+    </div>
+    <div class="card-title">✏️ Paste di Sini</div>
+    <textarea id="rawText" placeholder="1. https://s.shopee.co.id/xxx
+2. JOB RISET
+Cewe 20-25th
+Fee 300rb
+29 Juni
+Jl. Wolter Monginsidi
+3. 6289517756780"></textarea>
+    <button class="btn-pink" onclick="parseJob()">🔍 Proses →</button>
+  </div>
+
+  <div class="card" id="previewCard" style="display:none">
+    <div class="card-title">✅ Hasil — Cek Dulu</div>
+    <div class="preview-row">
+      <div class="preview-label">🛍️ Link Aff</div>
+      <div class="preview-val" id="p-aff"></div>
+    </div>
+    <div class="preview-row">
+      <div class="preview-label">📝 Deskripsi</div>
+      <div class="preview-val" id="p-desc" style="white-space:pre-line"></div>
+    </div>
+    <div class="preview-row">
+      <div class="preview-label">📲 Nomor CP</div>
+      <div class="preview-val" id="p-cp"></div>
+    </div>
+    <button class="btn-green" onclick="generateHTML()">⚙️ Generate HTML →</button>
+  </div>
+
+  <div class="card" id="outputCard" style="display:none">
+    <div class="card-title">📋 Copy → Paste ke SPCK Editor</div>
+    <textarea class="code-output" id="htmlOutput" readonly onclick="this.select()"></textarea>
+    <button class="btn-pink" onclick="copyCode()">📋 Copy Semua</button>
+    <p class="copy-note">Setelah copy → buka SPCK Editor → buat file baru → paste → simpan → upload ke GitHub 🌸</p>
+  </div>
+
+</div>
+
+<script>
+  let parsed = {};
+
+  function parseJob() {
+    const raw = document.getElementById('rawText').value.trim();
+    if (!raw) return;
+
+    const part1 = raw.match(/^1\.\s*(.+?)(?=\n2\.)/s);
+    const part2 = raw.match(/2\.\s*([\s\S]+?)(?=\n3\.)/s);
+    const part3 = raw.match(/3\.\s*(.+)/s);
+
+    parsed.aff  = part1 ? part1[1].trim() : '';
+    parsed.desc = part2 ? part2[1].trim() : '';
+    let rawCp = part3 ? part3[1].trim().replace(/[^0-9]/g, '') : '';
+    if (rawCp.startsWith('08')) rawCp = '62' + rawCp.slice(1);
+    parsed.cp = rawCp;
+
+    document.getElementById('p-aff').textContent  = parsed.aff  || '(tidak terdeteksi)';
+    document.getElementById('p-desc').textContent = parsed.desc || '(tidak terdeteksi)';
+    document.getElementById('p-cp').textContent   = parsed.cp   || '(tidak terdeteksi)';
+
+    document.getElementById('previewCard').style.display = 'block';
+    document.getElementById('outputCard').style.display  = 'none';
+    document.getElementById('previewCard').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function generateHTML() {
+    const aff  = parsed.aff  || '';
+    const desc = parsed.desc || '';
+    const cp   = parsed.cp   || '';
+
+    const html = `<!DOCTYPE html>
+<html lang="id">
+<head>
+  <title>Job Riset & Casting</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: rgb(228,185,211); font-family: Arial, sans-serif; min-height: 100vh; }
+    .gate { position: fixed; inset: 0; background: rgba(255,220,235,0.97); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 999; }
+    .gate-box { background: white; border: 2px solid #f4a7c0; border-radius: 20px; padding: 28px 22px; max-width: 360px; width: 100%; text-align: center; }
+    .gate-box h2 { color: #c2607a; font-size: 1.1rem; margin-bottom: 8px; }
+    .gate-box p { color: #888; font-size: 0.75rem; line-height: 1.7; margin-bottom: 12px; }
+    .btn-unlock { display: none; width: 100%; background: #78c478; color: white; border: none; padding: 14px; border-radius: 12px; font-size: 0.85rem; font-weight: bold; cursor: pointer; margin-top: 8px; }
+    .timer-text { font-size: 0.68rem; color: #bbb; margin-top: 8px; }
+    .header { background: #f4a7c0; text-align: center; padding: 24px 16px; border-bottom: 2px solid #e87fa5; }
+    .header h1 { color: white; font-size: 1.4rem; font-weight: 900; margin: 0; }
+    .header p { color: white; font-size: 0.8rem; margin-top: 6px; opacity: 0.9; }
+    .content { padding: 16px; max-width: 480px; margin: 0 auto; padding-bottom: 32px; }
+    .card { background: white; border: 1.5px solid #f4d0dc; border-radius: 16px; padding: 18px; margin-bottom: 14px; }
+    .card-title { font-size: 1rem; font-weight: 800; color: #c2607a; margin-bottom: 10px; }
+    .desc-box { background: #fff9fb; border: 1px solid #f4d0dc; border-radius: 12px; padding: 12px 14px; margin: 12px 0; font-size: 0.75rem; color: #5a3d48; font-weight: 600; line-height: 1.8; white-space: pre-line; }
+    .btn-brand { display: block; background: #f4a7c0; color: white; text-decoration: none; padding: 12px; border-radius: 10px; font-size: 0.78rem; font-weight: 800; text-align: center; margin-bottom: 10px; }
+    .btn-wa { display: block; background: #78c478; color: white; text-decoration: none; padding: 12px; border-radius: 10px; font-size: 0.78rem; font-weight: 800; text-align: center; margin-top: 8px; }
+    .group-section { background: white; border: 1.5px solid #f4d0dc; border-radius: 16px; padding: 18px; margin: 8px 0 20px; text-align: center; }
+    .group-section h3 { color: #c2607a; font-size: 0.9rem; margin-bottom: 4px; font-weight: 900; }
+    .group-section p { color: #d4a0b0; font-size: 0.68rem; margin-bottom: 14px; }
+    .btn-group { display: block; background: #78c478; color: white; text-decoration: none; padding: 11px; border-radius: 10px; font-size: 0.75rem; font-weight: 800; text-align: center; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <div class="gate" id="gate">
+    <div class="gate-box">
+      <div>🌸</div>
+      <h2>Hai, Selamat Datang!</h2>
+      <p>Sebelum lihat info loker, klik link produk di bawah dulu ya!</p>
+      <a class="btn-brand" href="${aff}" target="_blank" id="shopeeBtn">🛍️ Cek Produk Terkait</a>
+      <button class="btn-unlock" id="unlockBtn" onclick="unlockContent()">✅ Sudah Cek — Lihat Loker!</button>
+      <p class="timer-text" id="timerText">Klik link di atas dulu ya 👆</p>
+    </div>
+  </div>
+  <div class="header">
+    <h1>💼 Job Riset & Casting</h1>
+    <p>Info loker riset & casting terpercaya</p>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">📢 Job Riset & Casting</div>
+      <a class="btn-brand" href="${aff}" target="_blank">🛍️ Cek Produk Terkait</a>
+      <div class="desc-box">${desc}</div>
+      <a class="btn-wa" href="https://wa.me/${cp}" target="_blank">📲 Minat? Chat di sini</a>
+    </div>
+    <div class="group-section">
+      <h3>🌸 Gabung Grup Kami</h3>
+      <p>Dapat info loker lebih cepat!</p>
+      <a class="btn-group" href="https://chat.whatsapp.com/FFabFQqDoO4HonfpPx0HSs?mode=gi_t" target="_blank">💼 Grup Riset & Casting</a>
+      <a class="btn-group" href="https://chat.whatsapp.com/BC28zsl3QdLDQsUAy0QyTp?mode=gi_t" target="_blank">🎁 Grup Free Produk</a>
+    </div>
+  </div>
+  <script>
+    let clicked=false,timerDone=false,timerStarted=false;
+    document.getElementById('shopeeBtn').addEventListener('click',function(){if(!timerDone)clicked=true;});
+    document.addEventListener('visibilitychange',function(){
+      if(document.visibilityState==='visible'&&clicked&&!timerStarted&&!timerDone){
+        timerStarted=true;let sisa=5;
+        const tt=document.getElementById('timerText'),ub=document.getElementById('unlockBtn');
+        tt.textContent='Tunggu '+sisa+' detik...';
+        const iv=setInterval(()=>{sisa--;if(sisa<=0){clearInterval(iv);timerDone=true;ub.style.display='block';tt.textContent='✅ Yeay bisa akses sekarang!';}else{tt.textContent='Tunggu '+sisa+' detik...';}},1000);
+      }
+    });
+    function unlockContent(){document.getElementById('gate').style.display='none';}
+  <\/script>
+</body>
+</html>`;
+
+    document.getElementById('htmlOutput').value = html;
+    document.getElementById('outputCard').style.display = 'block';
+    document.getElementById('outputCard').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function copyCode() {
+    const output = document.getElementById('htmlOutput');
+    output.select();
+    document.execCommand('copy');
+    alert('✅ Berhasil dicopy! Paste ke SPCK Editor ya 🌸');
+  }
+</script>
+
+</body>
+</html>
