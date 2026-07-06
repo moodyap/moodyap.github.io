@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <title>Job Riset & Casting</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: rgb(228,185,211); font-family: Arial, sans-serif; min-height: 100vh; }
+    .gate { position: fixed; inset: 0; background: rgba(255,220,235,0.97); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 999; }
+    .gate-box { background: white; border: 2px solid #f4a7c0; border-radius: 20px; padding: 28px 22px; max-width: 360px; width: 100%; text-align: center; }
+    .gate-box h2 { color: #c2607a; font-size: 1.1rem; margin-bottom: 8px; }
+    .gate-box p { color: #888; font-size: 0.75rem; line-height: 1.7; margin-bottom: 12px; }
+    .btn-unlock { display: none; width: 100%; background: #78c478; color: white; border: none; padding: 14px; border-radius: 12px; font-size: 0.85rem; font-weight: bold; cursor: pointer; margin-top: 8px; }
+    .timer-text { font-size: 0.68rem; color: #bbb; margin-top: 8px; }
+    .header { background: #f4a7c0; text-align: center; padding: 24px 16px; border-bottom: 2px solid #e87fa5; }
+    .header h1 { color: white; font-size: 1.4rem; font-weight: 900; margin: 0; }
+    .header p { color: white; font-size: 0.8rem; margin-top: 6px; opacity: 0.9; }
+    .content { padding: 16px; max-width: 480px; margin: 0 auto; padding-bottom: 32px; }
+    .card { background: white; border: 1.5px solid #f4d0dc; border-radius: 16px; padding: 18px; margin-bottom: 14px; }
+    .card-title { font-size: 1rem; font-weight: 800; color: #c2607a; margin-bottom: 10px; }
+    .desc-box { background: #fff9fb; border: 1px solid #f4d0dc; border-radius: 12px; padding: 12px 14px; margin: 12px 0; font-size: 0.75rem; color: #5a3d48; font-weight: 600; line-height: 1.8; white-space: pre-line; }
+    .btn-brand { display: block; background: #f4a7c0; color: white; text-decoration: none; padding: 12px; border-radius: 10px; font-size: 0.78rem; font-weight: 800; text-align: center; margin-bottom: 10px; }
+    .btn-wa { display: block; background: #78c478; color: white; text-decoration: none; padding: 12px; border-radius: 10px; font-size: 0.78rem; font-weight: 800; text-align: center; margin-top: 8px; }
+    .group-section { background: white; border: 1.5px solid #f4d0dc; border-radius: 16px; padding: 18px; margin: 8px 0 20px; text-align: center; }
+    .group-section h3 { color: #c2607a; font-size: 0.9rem; margin-bottom: 4px; font-weight: 900; }
+    .group-section p { color: #d4a0b0; font-size: 0.68rem; margin-bottom: 14px; }
+    .btn-group { display: block; background: #78c478; color: white; text-decoration: none; padding: 11px; border-radius: 10px; font-size: 0.75rem; font-weight: 800; text-align: center; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <div class="gate" id="gate">
+    <div class="gate-box">
+      <div>🌸</div>
+      <h2>Hai, Selamat Datang!</h2>
+      <p>Sebelum lihat info loker, klik link produk di bawah dulu ya!</p>
+      <a class="btn-brand" href="https://s.shopee.co.id/5AqfY2xNE0" target="_blank" id="shopeeBtn">🛍️ Cek Produk Terkait</a>
+      <button class="btn-unlock" id="unlockBtn" onclick="unlockContent()">✅ Sudah Cek — Lihat Loker!</button>
+      <p class="timer-text" id="timerText">Klik link di atas dulu ya 👆</p>
+    </div>
+  </div>
+  <div class="header">
+    <h1>💼 Job Riset & Casting</h1>
+    <p>Info loker riset & casting terpercaya</p>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">📢 Job Riset & Casting</div>
+      <a class="btn-brand" href="https://s.shopee.co.id/5AqfY2xNE0" target="_blank">🛍️ Cek Produk Terkait</a>
+      <div class="desc-box">JUST INFO RISET MOISTURIZER 💆‍♀️
+💰 Fee: Rp280.000 (cash, dibayarkan saat visit ke-4)
+Kriteria:
+Perempuan usia 20–30 tahun (diutamakan usia 23–30 tahun)
+Menggunakan moisturizer
+Memiliki jerawat, terutama di pipi kanan dan kiri
+Database wajah 3 bulan
+Pilihan Jadwal:
+🕖 Batch 1 (Pagi)
+Tanggal 13, 14, 20, dan 27 Juli
+Jam 07.00 WIB
+4x datang
+🌞 Batch 2 (Siang)
+Tanggal 17 Juli, 24 Juli, 31 Juli, dan 14 Agustus
+4x datang
+
+📍 Lokasi: Ulujami, Jakarta Selatan</div>
+      <a class="btn-wa" href="https://wa.me/6287762671514" target="_blank">📲 Minat? Chat di sini</a>
+    </div>
+    <div class="group-section">
+      <h3>🌸 Gabung Grup Kami</h3>
+      <p>Dapat info loker lebih cepat!</p>
+      <a class="btn-group" href="https://chat.whatsapp.com/FFabFQqDoO4HonfpPx0HSs?mode=gi_t" target="_blank">💼 Grup Riset & Casting</a>
+      <a class="btn-group" href="https://chat.whatsapp.com/BC28zsl3QdLDQsUAy0QyTp?mode=gi_t" target="_blank">🎁 Grup Free Produk</a>
+    </div>
+  </div>
+  <script>
+    let clicked=false,timerDone=false,timerStarted=false;
+    document.getElementById('shopeeBtn').addEventListener('click',function(){if(!timerDone)clicked=true;});
+    document.addEventListener('visibilitychange',function(){
+      if(document.visibilityState==='visible'&&clicked&&!timerStarted&&!timerDone){
+        timerStarted=true;let sisa=5;
+        const tt=document.getElementById('timerText'),ub=document.getElementById('unlockBtn');
+        tt.textContent='Tunggu '+sisa+' detik...';
+        const iv=setInterval(()=>{sisa--;if(sisa<=0){clearInterval(iv);timerDone=true;ub.style.display='block';tt.textContent='✅ Yeay bisa akses sekarang!';}else{tt.textContent='Tunggu '+sisa+' detik...';}},1000);
+      }
+    });
+    function unlockContent(){document.getElementById('gate').style.display='none';}
+  </script>
+</body>
+</html>
